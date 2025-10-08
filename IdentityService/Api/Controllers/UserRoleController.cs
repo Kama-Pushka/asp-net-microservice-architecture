@@ -20,7 +20,7 @@ public class UserRoleController : ControllerBase
     public async Task<ActionResult<IEnumerable<RoleResponse>>> GetUserRoles(Guid id)
     {
         var userRoles = await _userRoleService.GetRolesForUserAsync(id);
-        return Ok(userRoles.Select(r => MapToRoleResponse(r))); // .ToArray()
+        return Ok(userRoles.Select(r => MapToRoleResponse(r))); // TODO может добавить .ToArray()?
     }
 
     [HttpPost]

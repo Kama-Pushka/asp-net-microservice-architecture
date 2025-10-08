@@ -31,7 +31,7 @@ public class UserRepository : IUserRepository
 
     public async Task UpdateAsync(UserDal user)
     {
-        _context.Users.Update(user); // TODO
+        _context.Users.Update(user); // TODO вместо обновления объекта по Id происходит создание нового
         await _context.SaveChangesAsync();
     }
 

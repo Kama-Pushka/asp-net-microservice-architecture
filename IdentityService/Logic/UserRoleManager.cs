@@ -23,10 +23,10 @@ public class UserRoleManager : IUserRoleManager
 
     public async Task AddUserRoleAsync(UserRoleLogic userRole)
     {
-        await _userRoleRepository.AddUserRoleAsync(MapToUserRoleDal(userRole)); // userRole.UserId, userRole.RoleId ???
+        await _userRoleRepository.AddUserRoleAsync(MapToUserRoleDal(userRole)); // TODO может лучше userRole.UserId, userRole.RoleId ???
     }
 
-    public async Task DeleteUserRoleAsync(UserRoleLogic userRole) // TODO
+    public async Task DeleteUserRoleAsync(UserRoleLogic userRole) // TODO убрать UserId из тела запроса
     {
         await _userRoleRepository.DeleteUserRoleAsync(userRole.UserId, userRole.RoleId);
     }
