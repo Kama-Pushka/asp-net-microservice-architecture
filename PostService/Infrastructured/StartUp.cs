@@ -10,7 +10,7 @@ public static class InfrastructuredStartUp
     {
         // Подключение к SQLite
         services.AddDbContext<PostDbContext>(options =>
-            options.UseSqlite("Data Source=IdentityService.db"));
+            options.UseSqlite("Data Source=PostService.db"));
 
         // Регистрация репозиториев
         services.AddScoped<IStorePost, PostRepository>();

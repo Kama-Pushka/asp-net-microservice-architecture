@@ -24,7 +24,7 @@ public class PostController : ControllerBase
         {
             return NotFound();
         }
-        return Ok(post);
+        return Ok(post); // TODO PostResponse
     }
 
     [HttpGet]
@@ -36,15 +36,16 @@ public class PostController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Post>> CreatePost([FromBody] PostResponse post)
+    public async Task<ActionResult<Post>> CreatePost([FromBody] PostRequest postRequest)
     {
-        await _postService.AddPostAsync(new Post()
+        var post = new Post()
         {
-            Id = post.Id,
-            Title = post.Title,
-            Content = post.Content,
+            Id = Guid.NewGuid(), // TODO переместить, тут этого быть не должно
+            Title = postRequest.Title,
+            Content = postRequest.Content,
             CreatedAt = DateTime.Now
-        });
+        };
+        await _postService.AddPostAsync(post);
         return CreatedAtAction(nameof(GetPost), new { id = post.Id }, post);
     }
 
