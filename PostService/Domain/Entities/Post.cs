@@ -10,8 +10,6 @@ public partial record Post // : BaseEntityModel<Guid>
     public required string Content { get; set; }
     public required DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
-    
-    public CreatedPostUserInfo UserInfo { get; init; }
 }
 
 public partial record Post // : BaseEntityModel<Guid>

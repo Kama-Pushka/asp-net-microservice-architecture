@@ -20,7 +20,7 @@ public class IdentityConnectionService : IIdentityConnectionService
     {
         var request = new HttpRequestData
         {
-            Uri = new Uri($"http://localhost:31719/v1/profiles/{user.UserId}"),
+            Uri = new Uri($"http://localhost:5156/api/User/{user.UserId}"), // TODO
             Method = HttpMethod.Get,
             ContentType = ContentType.ApplicationJson
         };
