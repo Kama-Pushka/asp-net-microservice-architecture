@@ -1,4 +1,5 @@
 using Domain.Interfaces;
+using Infrastructured.Connections;
 using Infrastructured.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +15,7 @@ public static class InfrastructuredStartUp
 
         // Регистрация репозиториев
         services.AddScoped<IStorePost, PostRepository>();
+        services.AddScoped<ICheckUser, CheckUser>();
 
         return services;
     }
