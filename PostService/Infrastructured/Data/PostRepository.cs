@@ -23,10 +23,11 @@ public class PostRepository : IStorePost
         return await _context.Posts.ToListAsync();
     }
 
-    public async Task AddPostAsync(Post post)
+    public async Task<Guid> AddPostAsync(Post post)
     {
-        _context.Posts.Add(post);
+        var e = _context.Posts.Add(post);
         await _context.SaveChangesAsync();
+        return e.Entity.Id;
     }
 
     public async Task UpdatePostAsync(Post post)

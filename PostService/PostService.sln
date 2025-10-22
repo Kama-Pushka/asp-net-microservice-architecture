@@ -8,6 +8,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructured", "Infrastr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Services\Services.csproj", "{4C9B4304-C5B1-46F8-A164-9DC462398868}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libs", "Libs", "{786609FB-ABEB-4B2C-84F6-132BFCEA4CE7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreLib", "..\Libs\CoreLib\CoreLib\CoreLib.csproj", "{1FDE7E62-8EC2-45E4-8780-C1CBF6178A3C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityConnectionLib", "..\Libs\CoreLib\IdentityConnectionLib\IdentityConnectionLib.csproj", "{A02FF056-E5BD-4C9E-8083-E58DE9F9F13B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +36,17 @@ Global
 		{4C9B4304-C5B1-46F8-A164-9DC462398868}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C9B4304-C5B1-46F8-A164-9DC462398868}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4C9B4304-C5B1-46F8-A164-9DC462398868}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FDE7E62-8EC2-45E4-8780-C1CBF6178A3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FDE7E62-8EC2-45E4-8780-C1CBF6178A3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FDE7E62-8EC2-45E4-8780-C1CBF6178A3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FDE7E62-8EC2-45E4-8780-C1CBF6178A3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A02FF056-E5BD-4C9E-8083-E58DE9F9F13B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A02FF056-E5BD-4C9E-8083-E58DE9F9F13B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A02FF056-E5BD-4C9E-8083-E58DE9F9F13B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A02FF056-E5BD-4C9E-8083-E58DE9F9F13B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1FDE7E62-8EC2-45E4-8780-C1CBF6178A3C} = {786609FB-ABEB-4B2C-84F6-132BFCEA4CE7}
+		{A02FF056-E5BD-4C9E-8083-E58DE9F9F13B} = {786609FB-ABEB-4B2C-84F6-132BFCEA4CE7}
 	EndGlobalSection
 EndGlobal

@@ -7,10 +7,12 @@ namespace Services;
 public class PostManager : IPostManager
 {
     private readonly IStorePost _postRepository;
+    private readonly ICheckUser _checkUser;
 
-    public PostManager(IStorePost postRepository)
+    public PostManager(IStorePost postRepository,  ICheckUser checkUser)
     {
         _postRepository = postRepository;
+        _checkUser = checkUser;
     }
 
     public async Task<Post> GetPostByIdAsync(Guid id)
@@ -23,9 +25,9 @@ public class PostManager : IPostManager
         return await _postRepository.GetAllPostsAsync();
     }
 
-    public async Task AddPostAsync(Post post)
+    public async Task<Guid> AddPostAsync(Post post)
     {
-        await _postRepository.AddPostAsync(post);
+        return await post.SaveAsync(_checkUser, _postRepository);
     }
 
     public async Task UpdatePostAsync(Post post)

@@ -18,7 +18,7 @@ public class UserManager : IUserManager
     public async Task<UserLogic> GetUserByIdAsync(Guid id)
     {
         var userDal = await _userRepository.GetByIdAsync(id);
-        return MapToUserLogic(userDal);
+        return userDal == null ? null : MapToUserLogic(userDal);
     }
 
     public async Task<IEnumerable<UserLogic>> GetAllUsersAsync()

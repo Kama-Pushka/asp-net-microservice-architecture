@@ -40,13 +40,13 @@ public class PostController : ControllerBase
     {
         var post = new Post()
         {
-            Id = Guid.NewGuid(), // TODO переместить, тут этого быть не должно
+            UserId = postRequest.UserId,
             Title = postRequest.Title,
             Content = postRequest.Content,
             CreatedAt = DateTime.Now
         };
-        await _postService.AddPostAsync(post);
-        return CreatedAtAction(nameof(GetPost), new { id = post.Id }, post);
+        var id = await _postService.AddPostAsync(post);
+        return CreatedAtAction(nameof(GetPost), new { id }, post);
     }
 
     [HttpPut("{id}")]
