@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddInfrastructuredServices();
 builder.Services.AddLogicServices();
 builder.Services.AddHttpRequestService();
-builder.Services.TryAddTraceId();
+builder.Services.AddTraceId();
 
 // Регистрация контроллеров
 builder.Services.AddEndpointsApiExplorer();

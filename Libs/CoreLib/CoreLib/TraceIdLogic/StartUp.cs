@@ -7,7 +7,7 @@ namespace CoreLib.TraceIdLogic;
 
 public static class StartUpTraceId
 {
-    public static IServiceCollection TryAddTraceId(this IServiceCollection serviceCollection)
+    public static IServiceCollection AddTraceId(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddScoped<TraceIdAccessor>();
         serviceCollection

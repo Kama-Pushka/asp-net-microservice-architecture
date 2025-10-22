@@ -2,11 +2,11 @@
 
 public record struct HttpConnectionData()
 {
-    public TimeSpan? Timeout { get; set; } = null;
+    public TimeSpan? Timeout { get; init; } = null;
     
-    public CancellationToken CancellationToken { get; set; } = default;
+    public CancellationToken CancellationToken { get; init; } = default;
     
-    public string ClientName { get; set; }
+    public string ClientName { get; init; }
     
-    public HttpCompletionOption CompletionOption { get; init; } = HttpCompletionOption.ResponseContentRead; // TODO
+    public HttpCompletionOption CompletionOption { get; init; } = HttpCompletionOption.ResponseContentRead;
 }

@@ -1,4 +1,5 @@
-﻿using System.Net.Mime;
+﻿using System.Net.Http.Json;
+using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -26,65 +27,24 @@ internal class HttpRequestService : IHttpRequestService
 
     /// <inheritdoc />
     public async Task<HttpResponse<TResponse>> SendRequestAsync<TResponse>(HttpRequestData requestData,
-        HttpConnectionData connectionData) // TODO
+        HttpConnectionData connectionData)
     {
         if (requestData.Uri is null)
-        {
             throw new ArgumentNullException(nameof(requestData.Uri), "Request Uri is required");
-        }
 
         var client = _httpConnectionService.CreateHttpClient(connectionData);
 
-        using var httpRequestMessage = new HttpRequestMessage
-        {
-            Method = requestData.Method,
-            RequestUri = requestData.Uri
-        };
+        var httpRequestMessage = PrepareRequestMessage(requestData);
 
-        foreach (var traceWriter in _traceWriterList)
-        {
-            var value = traceWriter.GetValue();
-            if (!string.IsNullOrWhiteSpace(value))
-                httpRequestMessage.Headers.TryAddWithoutValidation(traceWriter.Name, value);
-        }
-
-        foreach (var kv in requestData.HeaderDictionary)
-        {
-            httpRequestMessage.Headers.TryAddWithoutValidation(kv.Key, kv.Value);
-        }
-
-        if (requestData.Body != null && HttpMethodAllowsBody(requestData.Method))
-        {
-            httpRequestMessage.Content = PrepareContent(requestData.Body, requestData.ContentType);
-        }
-
-        using var responseMessage = await _httpConnectionService.SendRequestAsync(
+        var responseMessage = await _httpConnectionService.SendRequestAsync(
             httpRequestMessage,
             client,
             connectionData.CancellationToken,
             connectionData.CompletionOption);
 
-        var responseBytes = responseMessage.Content is null
-            ? Array.Empty<byte>()
-            : await responseMessage.Content.ReadAsByteArrayAsync(connectionData.CancellationToken);
-
-        TResponse? body = default;
-        if (typeof(TResponse) == typeof(string))
-        {
-            body = (TResponse)(object)Encoding.UTF8.GetString(responseBytes);
-        }
-        else if (typeof(TResponse) == typeof(byte[]))
-        {
-            body = (TResponse)(object)responseBytes;
-        }
-        else if (responseBytes.Length > 0)
-        {
-            body = JsonSerializer.Deserialize<TResponse>(responseBytes, new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-            });
-        }
+        var body = responseMessage.Content is null
+            ? default
+            : await responseMessage.Content.ReadFromJsonAsync<TResponse>(connectionData.CancellationToken);
 
         return new HttpResponse<TResponse>
         {
@@ -94,13 +54,65 @@ internal class HttpRequestService : IHttpRequestService
             Body = body
         };
     }
-    
+
+    /// <summary>
+    /// Формирует HttpRequestMessage для запроса
+    /// </summary>
+    private HttpRequestMessage PrepareRequestMessage(HttpRequestData requestData)
+    {
+        var uri = AddQueryParametersInUri(requestData.Uri, requestData.QueryParameterList);
+
+        var httpRequestMessage = new HttpRequestMessage
+        {
+            Method = requestData.Method,
+            RequestUri = uri // requestData.Uri
+        };
+
+        foreach (var header in requestData.HeaderDictionary)
+        {
+            httpRequestMessage.Headers.TryAddWithoutValidation(header.Key, header.Value);
+        }
+        foreach (var traceWriter in _traceWriterList)
+        {
+            var value = traceWriter.GetValue();
+            if (!string.IsNullOrWhiteSpace(value))
+                httpRequestMessage.Headers.TryAddWithoutValidation(traceWriter.Name, value);
+        }
+
+        if (requestData.Body != null && HttpMethodAllowsBody(requestData.Method))
+        {
+            httpRequestMessage.Content = PrepareContent(requestData.Body, requestData.ContentType);
+        }
+        
+        return httpRequestMessage;
+    }
+
+    /// <summary>
+    /// Добавляет параметры запроса в Uri
+    /// </summary>
+    private static Uri AddQueryParametersInUri(Uri rawUri, ICollection<KeyValuePair<string, string>> queryParameters)
+    {
+        var uri = new StringBuilder();
+
+        uri.Append(rawUri.ToString());
+        uri.Append('?');
+        foreach (var pair in queryParameters)
+        {
+            uri.Append(pair.Key);
+            uri.Append('=');
+            uri.Append(pair.Value);
+            uri.Append('&');
+        }
+        uri.Remove(uri.Length-1, 1);
+
+        return new Uri(uri.ToString());
+    }
+
     /// <summary>
     /// Проверяет, разрешено ли HTTP-методу иметь тело запроса.
     /// </summary>
     private static bool HttpMethodAllowsBody(HttpMethod method) =>
-        method == HttpMethod.Post || method == HttpMethod.Put || method == HttpMethod.Patch ||
-        method.Method.Equals("DELETE", StringComparison.OrdinalIgnoreCase); // TODO
+        method == HttpMethod.Post || method == HttpMethod.Put || method == HttpMethod.Patch || method == HttpMethod.Delete;
 
     /// <summary>
     /// Преобразует объект запроса в HttpContent в зависимости от типа содержимого.

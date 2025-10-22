@@ -9,6 +9,7 @@ namespace IdentityConnectionLib.ConnectionServices;
 
 public class IdentityConnectionService : IIdentityConnectionService
 {
+    private readonly string _identityServiceUrl = "http://localhost:5156";
     private readonly IHttpRequestService _httpRequestService;
 
     public IdentityConnectionService(IServiceProvider serviceProvider) // TODO IConfiguration configuration
@@ -20,7 +21,7 @@ public class IdentityConnectionService : IIdentityConnectionService
     {
         var request = new HttpRequestData
         {
-            Uri = new Uri($"http://localhost:5156/api/User/{user.UserId}"), // TODO
+            Uri = new Uri($"{_identityServiceUrl}/api/User/{user.UserId}"),
             Method = HttpMethod.Get,
             ContentType = ContentType.ApplicationJson
         };
@@ -37,7 +38,7 @@ public class IdentityConnectionService : IIdentityConnectionService
     }
 }
 
-public record UserResponse
+public record UserResponse // TODO а это не дублирование из IdentityService??
 {
     public Guid Id { get; set; }
     public string Username { get; set; }

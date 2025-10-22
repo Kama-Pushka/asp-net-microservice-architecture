@@ -30,9 +30,14 @@ internal class HttpConnectionService : IHttpConnectionService
     }
 
     /// <inheritdoc />
-    public async Task<HttpResponseMessage> SendRequestAsync(HttpRequestMessage httpRequestMessage, HttpClient httpClient, CancellationToken cancellationToken, HttpCompletionOption httpCompletionOption = HttpCompletionOption.ResponseContentRead)
+    public async Task<HttpResponseMessage> SendRequestAsync(
+        HttpRequestMessage httpRequestMessage, 
+        HttpClient httpClient, 
+        CancellationToken cancellationToken, 
+        HttpCompletionOption httpCompletionOption = HttpCompletionOption.ResponseContentRead)
     {
-        var response = await httpClient.SendAsync(httpRequestMessage, httpCompletionOption, cancellationToken); // TODO polly
+        var response = await httpClient.SendAsync(httpRequestMessage, httpCompletionOption, cancellationToken); 
+        // TODO внедрить polly для повторной отправки запроса?
         return response;
     }
 }

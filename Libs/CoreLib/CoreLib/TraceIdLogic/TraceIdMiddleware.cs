@@ -16,7 +16,8 @@ public class TraceIdMiddleware
     {
         const string traceHeaderName = "TraceId";
 
-        if (context.Request.Headers.TryGetValue(traceHeaderName, out var traceId) && !string.IsNullOrWhiteSpace(traceId))
+        if (context.Request.Headers.TryGetValue(traceHeaderName, out var traceId) 
+            && !string.IsNullOrWhiteSpace(traceId))
         {
             traceReader.WriteValue(traceId);
         }
