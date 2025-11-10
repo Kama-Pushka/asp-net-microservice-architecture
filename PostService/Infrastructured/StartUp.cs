@@ -1,4 +1,7 @@
 using Domain.Interfaces;
+using IdentityConnectionLib.ConnectionServices;
+using IdentityConnectionLib.ConnectionServices.Interfaces;
+using Infrastructured.Connections;
 using Infrastructured.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,9 +14,10 @@ public static class InfrastructuredStartUp
         // Подключение к SQLite
         services.AddDbContext<PostDbContext>(options =>
             options.UseSqlite("Data Source=PostService.db"));
-
-        // Регистрация репозиториев
+        
         services.AddScoped<IStorePost, PostRepository>();
+        services.AddScoped<ICheckUser, CheckUser>();
+        services.AddScoped<IIdentityConnectionService, IdentityConnectionService>();
 
         return services;
     }
