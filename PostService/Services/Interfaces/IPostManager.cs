@@ -9,4 +9,6 @@ public interface IPostManager
     Task<Guid> AddPostAsync(Post post);
     Task UpdatePostAsync(Post post);
     Task DeletePostAsync(Guid id);
+    Task DeletePostsByUserId(Guid id);
+    Task UpdatePostsByUserId(Guid id);
 }

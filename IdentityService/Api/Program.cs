@@ -1,5 +1,8 @@
 using CoreLib.HttpLogic;
 using CoreLib.TraceIdLogic;
+using Logic;
+using Logic.Consumers;
+using MassTransit;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +26,41 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 builder.Host.UseSerilog();
+
+builder.Services.AddMassTransit(x =>
+{
+    x.SetKebabCaseEndpointNameFormatter();
+    
+    // State Machine + хранилище состояний в памяти
+    x.AddSagaStateMachine<UserUpdateSaga, UserUpdateSagaState>()
+        .InMemoryRepository();
+    
+    x.AddConsumer<DeleteUserConsumer>();
+
+    x.AddConsumer<UpdateUserConsumer>();
+    x.AddConsumer<RestoreUserConsumer>();
+    
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        //Здесь указаны стандартные настройки для подключения к RabbitMq
+        cfg.Host("localhost", "/", h =>
+        {
+            h.Username("guest");
+            h.Password("guest");
+        });
+        
+        cfg.ReceiveEndpoint("update-user", e =>
+        {
+            e.ConfigureConsumer<UpdateUserConsumer>(context);
+        });
+        cfg.ReceiveEndpoint("restore-user", e =>
+        {
+            e.ConfigureConsumer<RestoreUserConsumer>(context);
+        });
+        
+        cfg.ConfigureEndpoints(context);
+    });
+});
 
 var app = builder.Build();
 

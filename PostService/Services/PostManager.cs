@@ -39,4 +39,14 @@ public class PostManager : IPostManager
     {
         await _postRepository.DeletePostAsync(id);
     }
+    
+    public async Task DeletePostsByUserId(Guid id)
+    {
+        throw new NotImplementedException(); // TODO
+    }
+    
+    public async Task UpdatePostsByUserId(Guid id)
+    {
+        throw new NotImplementedException(); // TODO
+    }
 }
