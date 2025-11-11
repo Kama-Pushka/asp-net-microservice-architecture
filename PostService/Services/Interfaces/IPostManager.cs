@@ -10,5 +10,5 @@ public interface IPostManager
     Task UpdatePostAsync(Post post);
     Task DeletePostAsync(Guid id);
     Task DeletePostsByUserId(Guid id);
-    Task UpdatePostsByUserId(Guid id);
+    Task UpdatePostsByUserId(Guid id, string userName);
 }

@@ -44,33 +44,34 @@ public class UserUpdateSaga : MassTransitStateMachine<UserUpdateSagaState>
                 .Send(new Uri("queue:update-post"),context => new UpdatePostCommand(context.Saga.UserId, context.Saga.NewUsername)),
             
             When(UpdateUserFailed)
-                .Then(context =>
+                .Then(_ =>
                 {
-                    Console.WriteLine("UserUpdateFailed");
+                    Console.WriteLine("Получено событие: UserUpdateFailed");
                 })
-                .TransitionTo(Failed),
+                .TransitionTo(Failed)
+                .Finalize(),
             
             When(PostUpdated)
                 .TransitionTo(Completed)
-                .Finalize(), // TODO ??
+                .Finalize(), // TODO вынести окончание саги в During(Completed)?
             
             When(UpdatePostFailed)
-                .Then(context =>
+                .Then(_ =>
                 {
-                    Console.WriteLine("UpdatePostFailed");
+                    Console.WriteLine("Получено событие: UpdatePostFailed");
                 })
-                .Send(new Uri("queue:restore-user"),context => new RestoreUserCommand(context.Saga.UserId, context.Saga.OldUsername))
+                .Send(new Uri("queue:restore-user"),context => new RevertUserUpdateCommand(context.Saga.UserId, context.Saga.OldUsername))
                 .TransitionTo(Failed)
+                .Finalize()
         );
     }
 }
 
 public class UserUpdateSagaState : SagaStateMachineInstance
 {
-    public Guid CorrelationId { get; set; } // ID самой операции
+    public Guid CorrelationId { get; set; }
     public string CurrentState { get; set; }
-    public Guid UserId { get; set; } // ID удаляемого пользователя
-    public Guid PostId { get; set; } // ID удаляемого пользователя
-    public string NewUsername { get; set; } // ID удаляемого пользователя
-    public string OldUsername { get; set; } // ID удаляемого пользователя
+    public Guid UserId { get; set; }
+    public string NewUsername { get; set; }
+    public string OldUsername { get; set; }
 }

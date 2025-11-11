@@ -42,11 +42,11 @@ public class PostManager : IPostManager
     
     public async Task DeletePostsByUserId(Guid id)
     {
-        throw new NotImplementedException(); // TODO
+        await _postRepository.DeletePostsByUserIdAsync(id);
     }
     
-    public async Task UpdatePostsByUserId(Guid id)
+    public async Task UpdatePostsByUserId(Guid id, string userName)
     {
-        throw new NotImplementedException(); // TODO
+        await _postRepository.UpdatePostsByUserIdAsync(id, userName);
     }
 }

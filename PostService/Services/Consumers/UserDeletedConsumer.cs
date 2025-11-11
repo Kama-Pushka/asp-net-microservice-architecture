@@ -17,22 +17,20 @@ public class UserDeletedConsumer: IConsumer<UserDeleted>
 
     public async Task Consume(ConsumeContext<UserDeleted> context)
     {
-        try // TODO а как откатывать транзакцию, если упал этот сервис?
+        try
         {
+            _logger.LogInformation("Получено событие: UserDeleted для пользователя {userId}", context.Message.UserId);
+            
+            //throw new Exception("check exception");
+            
             var userId = context.Message.UserId;
             await _manager.DeletePostsByUserId(userId);
-            await context.Publish<PostDeleted>(new { UserId = userId }); // TODO а должен ли исходный контроллер дождаться ответа от последнего контроллера?
-            
-            // _logger.LogInformation("Получена команда на удаление ачивок для пользователя {UserId}", userId);
-            //
-            // // --- Здесь была бы логика удаления из БД ---
-            // _logger.LogInformation("Ачивки для пользователя {UserId} успешно удалены", userId);
-
-            // Сообщаем оркестратору, что этот шаг выполнен
+            _logger.LogInformation("Все посты для пользователя {userId} успешно удалены", userId);
         }
         catch(Exception ex)
         {
-            // todo
+            _logger.LogError(ex, ex.Message);
+            await context.Publish(new PostDeleteFailed(context.Message)); // TODO через заголовки из rabbitmq доставать сервисы, где транзакции завершились и откатывать
         }
     }
 }

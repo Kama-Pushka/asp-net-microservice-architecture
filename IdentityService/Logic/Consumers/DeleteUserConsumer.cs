@@ -17,21 +17,22 @@ public class DeleteUserConsumer: IConsumer<DeleteUserCommand>
 
     public async Task Consume(ConsumeContext<DeleteUserCommand> context)
     {
-        try // TODO а как откатывать транзакцию, если упал этот сервис?
+        try
         {
             var userId = context.Message.UserId;
-            // await _manager.DeleteUserAsync(userId);
-            await context.Publish(new UserDeleted(userId));
+            _logger.LogInformation("Получена команда: DeleteUserCommand для пользователя {userId}", userId);
             
-            // _logger.LogInformation("Получена команда на удаление ачивок для пользователя {UserId}", userId);
-            //
-            // // --- Здесь была бы логика удаления из БД ---
-            // _logger.LogInformation("Ачивки для пользователя {UserId} успешно удалены", userId);
-
-            // Сообщаем оркестратору, что этот шаг выполнен
+            //throw new Exception("check exception");
+            
+            var user = _manager.GetUserByIdAsync(userId);
+            
+            await _manager.DeleteUserAsync(userId);
+            _logger.LogInformation("Пользователь {UserId} успешно удален", userId);
+            await context.Publish(new UserDeleted(user.Result.Id, user.Result.Username, user.Result.Email));
         }
         catch(Exception ex)
         {
+            _logger.LogError(ex, ex.Message);
         }
     }
 }

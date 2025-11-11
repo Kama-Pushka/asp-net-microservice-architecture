@@ -36,9 +36,10 @@ builder.Services.AddMassTransit(x =>
         .InMemoryRepository();
     
     x.AddConsumer<DeleteUserConsumer>();
+    x.AddConsumer<PostDeleteFailedConsumer>();
 
     x.AddConsumer<UpdateUserConsumer>();
-    x.AddConsumer<RestoreUserConsumer>();
+    x.AddConsumer<RevertUserUpdateConsumer>();
     
     x.UsingRabbitMq((context, cfg) =>
     {
@@ -55,7 +56,7 @@ builder.Services.AddMassTransit(x =>
         });
         cfg.ReceiveEndpoint("restore-user", e =>
         {
-            e.ConfigureConsumer<RestoreUserConsumer>(context);
+            e.ConfigureConsumer<RevertUserUpdateConsumer>(context);
         });
         
         cfg.ConfigureEndpoints(context);

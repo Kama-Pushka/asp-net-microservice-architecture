@@ -17,24 +17,23 @@ public class UpdatePostCommandConsumer: IConsumer<UpdatePostCommand>
 
     public async Task Consume(ConsumeContext<UpdatePostCommand> context)
     {
-        try // TODO а как откатывать транзакцию, если упал этот сервис?
+        try
         {
-            var userId = context.Message.UserId;
-            await _manager.UpdatePostsByUserId(userId);
-            await context.Publish(new PostUpdated(userId)); // TODO а должен ли исходный контроллер дождаться ответа от последнего контроллера?
+            _logger.LogInformation("Получена команда: UpdatePostCommand для пользователя {userId}", context.Message.UserId);
             
-            // _logger.LogInformation("Получена команда на удаление ачивок для пользователя {UserId}", userId);
-            //
-            // // --- Здесь была бы логика удаления из БД ---
-            // _logger.LogInformation("Ачивки для пользователя {UserId} успешно удалены", userId);
+            //throw new Exception("check exception");
+            
+            var userId = context.Message.UserId;
+            var userName = context.Message.NewUsername;
+            await _manager.UpdatePostsByUserId(userId, userName);
+            _logger.LogInformation("Все посты для пользователя {userId} успешно обновлены", userId);
 
-            // Сообщаем оркестратору, что этот шаг выполнен
+            await context.Publish(new PostUpdated(userId));
         }
         catch(Exception ex)
         {
             var userId = context.Message.UserId;
-            await context.Publish(new UpdatePostFailed(userId)); // TODO а должен ли исходный контроллер дождаться ответа от последнего контроллера?
-            // todo
+            await context.Publish(new UpdatePostFailed(userId));
         }
     }
 }
