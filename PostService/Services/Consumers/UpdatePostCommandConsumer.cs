@@ -21,7 +21,7 @@ public class UpdatePostCommandConsumer: IConsumer<UpdatePostCommand>
         {
             _logger.LogInformation("Получена команда: UpdatePostCommand для пользователя {userId}", context.Message.UserId);
             
-            //throw new Exception("check exception");
+            //throw new Exception("check exception"); // для проверки exception кейсов
             
             var userId = context.Message.UserId;
             var userName = context.Message.NewUsername;

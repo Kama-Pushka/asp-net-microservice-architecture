@@ -22,7 +22,7 @@ public class DeleteUserConsumer: IConsumer<DeleteUserCommand>
             var userId = context.Message.UserId;
             _logger.LogInformation("Получена команда: DeleteUserCommand для пользователя {userId}", userId);
             
-            //throw new Exception("check exception");
+            //throw new Exception("check exception"); // для проверки exception кейсов
             
             var user = _manager.GetUserByIdAsync(userId);
             

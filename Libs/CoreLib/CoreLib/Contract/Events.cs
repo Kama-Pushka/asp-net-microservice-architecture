@@ -2,7 +2,7 @@
 
 public record UserDeleted(Guid UserId, string Username, string Email); 
 
-// public record PostDeleted(Guid UserId); пока не нужен
+// public record PostDeleted(Guid UserId); пока не нужен, у нас всего 2 микросервиса
 
 public record PostDeleteFailed(UserDeleted UserInfo); // TODO а правильно ли сохранять инфу для компенсирующего действия через прокидывание по ивентам?
 

@@ -28,22 +28,16 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
+// Конфигурация MassTransit для SAGA
 builder.Services.AddMassTransit(x =>
 {
-    // По умолчанию MassTransit использует Pascal case.
-    // Так как в большинстве случае в эндпоинтах будет использоваться Kebab case,
-    // укажем на это явно.
     x.SetKebabCaseEndpointNameFormatter();
     
     x.AddConsumer<UserDeletedConsumer>();
-    x.AddConsumer<UpdatePostCommandConsumer>(); // todo ??
-
-    // Меняем InMemory на RabbitMq и указываем данные для подключение к серверу.
-    // В остальном подключение похоже на InMemory, так реализация его в MassTransit
-    // намеренно реплицирует поведение именно RabbitMq
+    x.AddConsumer<UpdatePostCommandConsumer>();
+    
     x.UsingRabbitMq((context, cfg) =>
     {
-        // Здесь указаны стандартные настройки для подключения к RabbitMq
         cfg.Host("localhost", "/", h =>
         {
             h.Username("guest");

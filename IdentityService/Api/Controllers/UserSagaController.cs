@@ -24,7 +24,6 @@ public class UserSagaController : ControllerBase
     [HttpPut]
     public async Task UpdateUserAsync(Guid userId, string newUsername) // TODO dto
     {
-        // Обновляем имя пользователя
         await _bus.Publish(new UserUpdateRequested(userId, newUsername));
     }
 }

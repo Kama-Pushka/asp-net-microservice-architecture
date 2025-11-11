@@ -27,11 +27,11 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
+// Конфигурация MassTransit для SAGA
 builder.Services.AddMassTransit(x =>
 {
     x.SetKebabCaseEndpointNameFormatter();
     
-    // State Machine + хранилище состояний в памяти
     x.AddSagaStateMachine<UserUpdateSaga, UserUpdateSagaState>()
         .InMemoryRepository();
     
@@ -43,7 +43,6 @@ builder.Services.AddMassTransit(x =>
     
     x.UsingRabbitMq((context, cfg) =>
     {
-        //Здесь указаны стандартные настройки для подключения к RabbitMq
         cfg.Host("localhost", "/", h =>
         {
             h.Username("guest");

@@ -21,7 +21,7 @@ public class UserDeletedConsumer: IConsumer<UserDeleted>
         {
             _logger.LogInformation("Получено событие: UserDeleted для пользователя {userId}", context.Message.UserId);
             
-            //throw new Exception("check exception");
+            //throw new Exception("check exception"); // для проверки exception кейсов
             
             var userId = context.Message.UserId;
             await _manager.DeletePostsByUserId(userId);
