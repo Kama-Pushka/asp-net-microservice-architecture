@@ -39,4 +39,14 @@ public class PostManager : IPostManager
     {
         await _postRepository.DeletePostAsync(id);
     }
+    
+    public async Task DeletePostsByUserId(Guid id)
+    {
+        await _postRepository.DeletePostsByUserIdAsync(id);
+    }
+    
+    public async Task UpdatePostsByUserId(Guid id, string userName)
+    {
+        await _postRepository.UpdatePostsByUserIdAsync(id, userName);
+    }
 }

@@ -40,7 +40,7 @@ public class PostController : ControllerBase
     {
         var post = new Post()
         {
-            UserId = postRequest.UserId,
+            UserInfo = new UserInfo(postRequest.UserId, postRequest.UserName),
             Title = postRequest.Title,
             Content = postRequest.Content,
             CreatedAt = DateTime.Now

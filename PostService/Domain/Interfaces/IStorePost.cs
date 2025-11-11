@@ -9,4 +9,6 @@ public interface IStorePost
     Task<Guid> AddPostAsync(Post post);
     Task UpdatePostAsync(Post post);
     Task DeletePostAsync(Guid id);
+    Task DeletePostsByUserIdAsync(Guid id);
+    Task UpdatePostsByUserIdAsync(Guid id, string userName);
 }
