@@ -24,6 +24,14 @@ public class PostDbContext : DbContext
             entity.Property(p => p.Content).IsRequired();
             entity.Property(p => p.CreatedAt).IsRequired();
             entity.Property(p => p.UpdatedAt);
+            entity.OwnsOne(
+                e => e.UserInfo,
+                ownedNavigationBuilder =>
+                {
+                    ownedNavigationBuilder.Property(u => u.Id).HasColumnName("UserInfo_UserId").IsRequired();
+                    ownedNavigationBuilder.Property(u => u.Name).HasColumnName("UserInfo_Name").IsRequired();
+                });
         });
+        
     }
 }

@@ -45,4 +45,18 @@ public class PostRepository : IStorePost
             await _context.SaveChangesAsync();
         }
     }
+
+    public async Task DeletePostsByUserIdAsync(Guid id)
+    {
+        await _context.Posts
+            .Where(p => p.UserInfo.Id == id)
+            .ExecuteDeleteAsync();
+    }
+    
+    public async Task UpdatePostsByUserIdAsync(Guid id,  string userName)
+    {
+        await _context.Posts
+            .Where(p => p.UserInfo.Id == id)
+            .ExecuteUpdateAsync(s => s.SetProperty(p => p.UserInfo.Name, userName));
+    }
 }

@@ -1,8 +1,10 @@
 using CoreLib.HttpLogic;
 using CoreLib.TraceIdLogic;
 using Infrastructured;
+using MassTransit;
 using Serilog;
 using Services;
+using Services.Consumers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +27,31 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 builder.Host.UseSerilog();
+
+// Конфигурация MassTransit для SAGA
+builder.Services.AddMassTransit(x =>
+{
+    x.SetKebabCaseEndpointNameFormatter();
+    
+    x.AddConsumer<UserDeletedConsumer>();
+    x.AddConsumer<UpdatePostCommandConsumer>();
+    
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host("localhost", "/", h =>
+        {
+            h.Username("guest");
+            h.Password("guest");
+        });
+        
+        cfg.ReceiveEndpoint("update-post", e =>
+        {
+            e.ConfigureConsumer<UpdatePostCommandConsumer>(context);
+        });
+        
+        cfg.ConfigureEndpoints(context);
+    });
+});
 
 var app = builder.Build();
 

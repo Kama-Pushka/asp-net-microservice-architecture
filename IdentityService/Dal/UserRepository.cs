@@ -1,6 +1,8 @@
-﻿using Dal.Interfaces;
+﻿using System.Linq.Expressions;
+using Dal.Interfaces;
 using Dal.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace Dal;
 
@@ -31,8 +33,13 @@ public class UserRepository : IUserRepository
 
     public async Task UpdateAsync(UserDal user)
     {
-        _context.Users.Update(user); // TODO вместо обновления объекта по Id происходит создание нового
-        await _context.SaveChangesAsync();
+        var existingUser = await _context.Users.FindAsync(user.Id);
+        if (existingUser != null)
+        {
+            if (!string.IsNullOrEmpty(user.Username)) existingUser.Username = user.Username;
+            if (!string.IsNullOrEmpty(user.Email)) existingUser.Email = user.Email;
+            await _context.SaveChangesAsync();
+        }
     }
 
     public async Task DeleteAsync(Guid id)

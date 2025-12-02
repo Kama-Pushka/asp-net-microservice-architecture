@@ -8,11 +8,16 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\Libs\CoreLib\CoreLib\CoreLib.csproj" />
       <ProjectReference Include="..\Dal\Dal.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <None Remove="Properties\launchSettings.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MassTransit" Version="8.5.5" />
     </ItemGroup>
 
 </Project>
