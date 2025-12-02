@@ -1,5 +1,5 @@
 ﻿using DistributedLock.Interfaces;
-using ZooKeeperNet;
+using org.apache.zookeeper;
 
 namespace DistributedLock;
 
@@ -20,13 +20,13 @@ public class ZookeeperDistributedSynchronizationHandle : IDistributedSynchroniza
 
     public void Dispose()
     {
-        _zookeeper.Delete(_lockPath, -1);
+        _zookeeper.deleteAsync(_lockPath);
         _cancellationTokenSource.Cancel();
     }
 
     public async ValueTask DisposeAsync()
     {
-        await Task.Run(() => _zookeeper.Delete(_lockPath, -1));
+        await _zookeeper.deleteAsync(_lockPath);
         _cancellationTokenSource.Cancel();
     }
 }

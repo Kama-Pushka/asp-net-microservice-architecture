@@ -1,5 +1,5 @@
 ﻿using DistributedLock.Interfaces;
-using ZooKeeperNet;
+using org.apache.zookeeper;
 
 namespace DistributedLock;
 
@@ -16,6 +16,11 @@ public class ZookeeperDistributedSemaphore : IDistributedSemaphore
         _semaphorePath = semaphorePath;
         _maxPermits = maxPermits;
         _lockPath = $"{semaphorePath}/lock";
+        
+        if (!ExistsAsync(_semaphorePath).Result)
+        {
+            _zookeeper.createAsync(_semaphorePath, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT).Wait();
+        }
     }
 
     public string Name => _semaphorePath;
@@ -39,9 +44,10 @@ public class ZookeeperDistributedSemaphore : IDistributedSemaphore
         timeout ??= Timeout.InfiniteTimeSpan;
 
         var deadline = DateTime.UtcNow + timeout.Value;
-        while (DateTime.UtcNow < deadline)
+        while (deadline > DateTime.UtcNow || timeout == Timeout.InfiniteTimeSpan)
         {
-            var handle = TryAcquire(deadline - DateTime.UtcNow, cancellationToken);
+            var time = timeout == Timeout.InfiniteTimeSpan ? Timeout.InfiniteTimeSpan : deadline - DateTime.UtcNow;
+            var handle = TryAcquire(time, cancellationToken);
             if (handle != null)
                 return handle;
 
@@ -68,9 +74,10 @@ public class ZookeeperDistributedSemaphore : IDistributedSemaphore
         timeout ??= Timeout.InfiniteTimeSpan;
 
         var deadline = DateTime.UtcNow + timeout.Value;
-        while (DateTime.UtcNow < deadline)
+        while (deadline > DateTime.UtcNow || timeout == Timeout.InfiniteTimeSpan)
         {
-            var handle = await TryAcquireAsync(deadline - DateTime.UtcNow, cancellationToken);
+            var time = timeout == Timeout.InfiniteTimeSpan ? Timeout.InfiniteTimeSpan : deadline - DateTime.UtcNow;
+            var handle = await TryAcquireAsync(time, cancellationToken);
             if (handle != null)
                 return handle;
 
@@ -80,18 +87,31 @@ public class ZookeeperDistributedSemaphore : IDistributedSemaphore
         throw new TimeoutException("Failed to acquire semaphore within the specified timeout.");
     }
     
+    private async Task<bool> ExistsAsync(string path)
+    {
+        try
+        {
+            var stat = await _zookeeper.existsAsync(path);
+            return stat != null;
+        }
+        catch (KeeperException.NoNodeException)
+        {
+            return false;
+        }
+    }
+    
     private async Task<IDistributedSynchronizationHandle?> TryAcquireInternal()
     {
         try
         {
-            var lockPath = await Task.Run(() => _zookeeper.Create(_lockPath, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.EphemeralSequential));
-            var children = await Task.Run(() => _zookeeper.GetChildren(_semaphorePath, false));
-            var count = children.Count();
+            var lockPath = await _zookeeper.createAsync(_lockPath, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);
+            var children = await _zookeeper.getChildrenAsync(_semaphorePath);
+            var count = children.Children.Count;
 
             if (count <= _maxPermits)
                 return new ZookeeperDistributedSynchronizationHandle(_zookeeper, lockPath);
 
-            await Task.Run(() => _zookeeper.Delete(lockPath, -1));
+            await _zookeeper.deleteAsync(lockPath);
             return null;
         }
         catch (KeeperException.NodeExistsException)

@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreLib", "..\Libs\CoreLib\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityConnectionLib", "..\Libs\CoreLib\IdentityConnectionLib\IdentityConnectionLib.csproj", "{A02FF056-E5BD-4C9E-8083-E58DE9F9F13B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DistributedLock", "..\Libs\CoreLib\DistributedLock\DistributedLock.csproj", "{C6F8E0D0-5B34-47EF-A67B-D2C1DC31ED49}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,9 +46,14 @@ Global
 		{A02FF056-E5BD-4C9E-8083-E58DE9F9F13B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A02FF056-E5BD-4C9E-8083-E58DE9F9F13B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A02FF056-E5BD-4C9E-8083-E58DE9F9F13B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6F8E0D0-5B34-47EF-A67B-D2C1DC31ED49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6F8E0D0-5B34-47EF-A67B-D2C1DC31ED49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6F8E0D0-5B34-47EF-A67B-D2C1DC31ED49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6F8E0D0-5B34-47EF-A67B-D2C1DC31ED49}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{1FDE7E62-8EC2-45E4-8780-C1CBF6178A3C} = {786609FB-ABEB-4B2C-84F6-132BFCEA4CE7}
 		{A02FF056-E5BD-4C9E-8083-E58DE9F9F13B} = {786609FB-ABEB-4B2C-84F6-132BFCEA4CE7}
+		{C6F8E0D0-5B34-47EF-A67B-D2C1DC31ED49} = {786609FB-ABEB-4B2C-84F6-132BFCEA4CE7}
 	EndGlobalSection
 EndGlobal

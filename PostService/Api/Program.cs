@@ -1,7 +1,9 @@
 using CoreLib.HttpLogic;
 using CoreLib.TraceIdLogic;
+using DistributedLock;
 using Infrastructured;
 using MassTransit;
+using org.apache.zookeeper;
 using Serilog;
 using Services;
 using Services.Consumers;
@@ -13,6 +15,11 @@ builder.Services.AddInfrastructuredServices();
 builder.Services.AddLogicServices();
 builder.Services.AddHttpRequestService();
 builder.Services.AddTraceId();
+
+// Создание ZooKeeper и ZookeeperDistributedSemaphore
+var zookeeper = new ZooKeeper("localhost:2181", 30000, null);
+builder.Services.AddSingleton(zookeeper);
+builder.Services.AddSingleton(new ZookeeperDistributedSemaphore(zookeeper, "/semaphore", 1));
 
 // Регистрация контроллеров
 builder.Services.AddEndpointsApiExplorer();
