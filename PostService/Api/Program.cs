@@ -17,9 +17,9 @@ builder.Services.AddHttpRequestService();
 builder.Services.AddTraceId();
 
 // Создание ZooKeeper и ZookeeperDistributedSemaphore
-var zookeeper = new ZooKeeper("localhost:2181", 30000, null);
+var zookeeper = new ZooKeeper("localhost:2181", 60000, null);
 builder.Services.AddSingleton(zookeeper);
-builder.Services.AddSingleton(new ZookeeperDistributedSemaphore(zookeeper, "/semaphore", 1));
+builder.Services.AddSingleton(new ZookeeperDistributedSemaphore(zookeeper, "/semaphore", 2)); // TODO константы, вынести в какой-то конфиг
 
 // Регистрация контроллеров
 builder.Services.AddEndpointsApiExplorer();
