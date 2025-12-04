@@ -14,6 +14,9 @@ public class ZookeeperDistributedSynchronizationHandle : IDistributedSynchroniza
         _zookeeper = zookeeper;
         _lockPath = lockPath;
         _cancellationTokenSource = new CancellationTokenSource();
+        
+        var connectionWatcher = new ConnectionWatcher(this);
+        _zookeeper.existsAsync(_lockPath, connectionWatcher); // если сервис отвалится, будет получено уведомление об этом
     }
 
     public CancellationToken HandleLostToken => _cancellationTokenSource.Token;
@@ -27,6 +30,30 @@ public class ZookeeperDistributedSynchronizationHandle : IDistributedSynchroniza
     public async ValueTask DisposeAsync()
     {
         await _zookeeper.deleteAsync(_lockPath);
+        await _cancellationTokenSource.CancelAsync();
+    }
+
+    internal void NotifyConnectionLoss()
+    {
         _cancellationTokenSource.Cancel();
+    }
+
+    private sealed class ConnectionWatcher : Watcher
+    {
+        private readonly ZookeeperDistributedSynchronizationHandle _parent;
+
+        public ConnectionWatcher(ZookeeperDistributedSynchronizationHandle parent)
+        {
+            _parent = parent;
+        }
+
+        public override Task process(WatchedEvent @event)
+        {
+            if (@event.getState() == Event.KeeperState.Disconnected)
+            {
+                _parent.NotifyConnectionLoss();
+            }
+            return Task.CompletedTask;
+        }
     }
 }
