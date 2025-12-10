@@ -1,0 +1,30 @@
+﻿services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres_server
+    environment:
+      POSTGRES_DB: ips_service
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+    ports:
+      - "5433:5432"
+    volumes:
+      - ../db:/var/lib/postgresql
+    restart: always
+
+  web:
+    container_name: ip_web_app
+    build:
+      context: ..
+      dockerfile: lab2/Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      DATABASE_PROVIDER: postgres
+      CONNECTION_STRING: "Host=postgres;Port=5432;Username=user;Password=pass;Database=ips_service"
+      ASPNETCORE_URLS: "http://+:5000"
+      TYPE: jsonip
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    
